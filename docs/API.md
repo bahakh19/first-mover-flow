@@ -4,7 +4,7 @@ Generated from the docstrings of `fmflow` 2.2.4 by `scripts/make_api_docs.py`. R
 
 ## `fmflow`
 
-fmflow — First-Mover Flow: zero-beta stock selection from the flow and timing of analyst revisions.
+fmflow (First-Mover Flow): zero-beta stock selection from the flow and timing of analyst revisions.
 
 
 ## `fmflow.analytics.attribution`
@@ -56,11 +56,11 @@ Statistical inference for small, overlapping, heavily searched samples.
 - **`def ic_phase_test(ic: pd.Series, h: int = 21) -> dict`**
   One-sided test of a mean IC whose h-period labels overlap: average of the h non-overlapping sub-sample standard errors.
 - **`def memmel_test(r1: pd.Series, r2: pd.Series) -> tuple[float, float]`**
-  Jobson-Korkie test of equal Sharpe ratios with Memmel's (2003) correction; returns (z, two-sided p).
+  Jobson-Korkie test of equal Sharpe ratios with Memmel's (2003) correction, returns (z, two-sided p).
 - **`def min_track_record(r, sr_star: float = 0.0, alpha: float = 0.05, periods: int = 252) -> float`**
   Minimum track record length (years) for the observed Sharpe ratio to exceed `sr_star` at level `alpha`.
 - **`def psr(r, sr_star: float = 0.0) -> float`**
-  Probabilistic Sharpe ratio P(true SR > sr_star); sr_star in per-period (daily) units.
+  Probabilistic Sharpe ratio P(true SR > sr_star), sr_star in per-period (daily) units.
 - **`def rank_ic(feature: pd.DataFrame, fwd: pd.DataFrame, min_names: int = 6) -> pd.Series`**
   Daily cross-sectional Spearman correlation between a feature and forward returns (NaN below `min_names`).
 - **`def stationary_bootstrap_indices(n: int, n_boot: int = 1000, block: int = 21, seed: int = 42) -> np.ndarray`**
@@ -77,7 +77,7 @@ Performance and attribution metrics.
 - **`def drawdown(returns: pd.Series) -> pd.Series`**
   Drawdown path (equity / running peak - 1) of a daily return series.
 - **`def factor_attribution(strategy: pd.Series, factors: Mapping[str, pd.Series], hac_lags: int = 4) -> dict`**
-  Weekly regression of the strategy on several factor-return series; returns alpha, t, betas, R2.
+  Weekly regression of the strategy on several factor-return series, returns alpha, t, betas, R2.
 - **`def lo_adjusted_sharpe(returns: pd.Series, periods: int = 252, max_lag: int = 10) -> dict`**
   Annualised Sharpe ratio corrected for serial correlation (Lo, 2002).
 - **`def perf_stats(returns: pd.Series, periods: int = 252) -> pd.Series`**
@@ -125,7 +125,7 @@ Vectorised daily backtest with linear transaction costs, short-borrow fees and a
 - **`def annual_turnover(traded: pd.Series, periods: int = 252) -> float`**
   One-way turnover per year (half the traded notional).
 - **`def backtest(weights: pd.DataFrame, returns: pd.DataFrame, cost_bps: float = 5.0, borrow_bps: float = 0.0, execution_lag: int = 0) -> BacktestResult`**
-  Run the daily backtest: held = weights lagged by `execution_lag`; net = gross - costs - borrow.
+  Run the daily backtest: held = weights lagged by `execution_lag`, net = gross - costs - borrow.
 - **`def breakeven_cost_bps(result: BacktestResult, start=None, end=None) -> float`**
   Cost per unit traded (bps) at which the mean net return would be zero:  mean(gross - borrow) / mean(traded).
 - **`def cost_sensitivity(weights: pd.DataFrame, returns: pd.DataFrame, cost_grid=(0, 2.5, 5, 10, 20, 30, 50), borrow_grid=(0, 25, 50, 100), execution_lags=(0, 1), window: slice | None = None) -> pd.DataFrame`**
@@ -152,7 +152,7 @@ On-disk cache for the GJR-GARCH forecasts (the only slow step of the pipeline: ~
 Configuration objects. Every tunable number of the method lives here, nowhere else.
 
 - **`class DataConfig(annualization: int = 252, min_calendar_coverage: float = 0.5, calendar_active_days: int = 30, price_ffill_limit: int = 5, knowledge_lag: int = 1, tp_expiry_days: int = 252, tp_ratio_bounds: tuple[float, float] = (0.2, 5.0), revision_excess_bounds: tuple[float, float] = (0.3333333333333333, 3.0), event_min_ratings: int = 5, min_analysts: int = 3, garch_min_obs: int = 250, garch_refit: int = 21, garch_method: str = 'slsqp') -> None`**
-  Ingestion and point-in-time rules (identical for every dataset; never tuned on returns).
+  Ingestion and point-in-time rules (identical for every dataset, never tuned on returns).
 - **`class StrategyConfig(name: str = 'FMF-N', signals: tuple[str, ...] = ('breadth_63', 'event_breadth_63', 'breadth_resid_mom', 'leader_minus_herd'), leader_gap: int = 10, herd_lo: int = 3, herd_hi: int = 15, lmh_window: int = 126, lmh_min_n: int = 3, breadth_window: int = 63, breadth_min_n: int = 3, event_breadth_min_n: int = 2, rank_min_names: int = 5, k: int | None = 4, leg_fraction: float | None = None, k_min: int = 2, tranche_period: int = 42, allocator: str = 'IV-GJR', net_exposure: float = 0.0, neutralize: str = 'dollar', beta_window: int = 252, max_weight: float | None = None, vol_target: float | None = None, vol_lookback: int = 126, max_leverage: float = 2.0, cost_bps: float = 5.0, borrow_bps: float = 0.0, execution_lag: int = 0, data: DataConfig = <factory>) -> None`**
   Signal, construction and cost parameters of a First-Mover Flow book.
 
@@ -182,11 +182,11 @@ Loaders that apply the data contract.
 - **`def load_prices(path: str | Path) -> pd.DataFrame`**
   Load a long price table (date, stock, price) and validate it.
 - **`def load_ratings(path: str | Path, prices: pd.DataFrame | None = None) -> pd.DataFrame`**
-  Load a long ratings table (date, estimate_value, stock, analyst); values are kept as text until cleaning.
+  Load a long ratings table (date, estimate_value, stock, analyst), values are kept as text until cleaning.
 - **`def read_table(path: str | Path, **kw) -> pd.DataFrame`**
   Read a CSV, Parquet or Excel file into a DataFrame (dialect detected, see the module docstring).
 - **`def sniff_csv(path: str | Path) -> dict`**
-  Separator and decimal mark of a CSV file: {"sep": ",", ";" or "\t", "decimal": "." or ","}.
+  Separator and decimal mark of a CSV file: {"sep": ",", "," or "\t", "decimal": "." or ","}.
 
 ## `fmflow.data.normalize`
 
@@ -208,7 +208,7 @@ The input data contract (see DATA.md for the full outline).
 - **`def normalise_columns(df: pd.DataFrame) -> pd.DataFrame`**
   Copy of `df` with column names stripped and lower-cased (' Date ' -> 'date').
 - **`def validate_prices(prices: pd.DataFrame) -> pd.DataFrame`**
-  Check the price table; returns a column-normalised copy.
+  Check the price table, returns a column-normalised copy.
 - **`def validate_ratings(ratings: pd.DataFrame, prices: pd.DataFrame | None = None) -> pd.DataFrame`**
   Check the ratings table (and, if prices are given, that targets are on the price scale).
 
@@ -424,13 +424,13 @@ The validation battery of the paper, as reusable functions that work on any data
 - **`def leave_one_out(prices_raw: pd.DataFrame, ratings_raw: pd.DataFrame, cfg: StrategyConfig, windows: Mapping[str, slice], sig_vol: pd.DataFrame | None = None) -> pd.DataFrame`**
   Sharpe / Calmar / max drawdown of the full pipeline rebuilt on the universe without each stock. Pass `sig_vol` (univariate GARCH forecasts, unaffected by dropping a stock) to avoid re-estimating it.
 - **`def multiverse(prices: pd.DataFrame, ratings: pd.DataFrame, base: StrategyConfig, grid: Mapping[str, list], windows: Mapping[str, slice], sig_vol: pd.DataFrame | None = None, mode: str = 'oat', n_random: int = 200, seed: int = 0, n_jobs: int = 1) -> tuple[pd.DataFrame, pd.DataFrame]`**
-  Run the strategy over a family of reasonable specifications (Steegen et al. 2016; Simonsohn et al. 2020).
+  Run the strategy over a family of reasonable specifications (Steegen et al. 2016, Simonsohn et al. 2020).
 - **`def signal_ic_table(out: StrategyOutput, h: int = 21, window: slice | None = None, min_names: int = 6) -> pd.DataFrame`**
   IC_h of each composite input, the composite and the LMH parts. Labels must END inside `window` (no leakage across a split): the last h sessions of the window are dropped.
 - **`def strategy_placebo(out: StrategyOutput, windows: Mapping[str, slice], n_iid: int = 300, n_perm: int = 500, shift_step: int = 4, min_shift: int = 126, metric: Callable[[pd.Series], float] = <function _sharpe at 0x7f69de2745e0>, seed: int = 42) -> pd.DataFrame`**
   Placebo p-values of the strategy's composite under three nulls (see fmflow.analytics.placebo).
 - **`def truncation_check(prices_raw: pd.DataFrame, ratings_raw: pd.DataFrame, cfg: StrategyConfig, cut_dates, sig_vol: pd.DataFrame | None = None, extra: dict | None = None, atol: float = 1e-10) -> pd.DataFrame`**
-  Recompute every signal, the composite and the weights on raw data truncated at each cut date T and compare with the full-sample values up to T. Any difference is look-ahead. Ratings are truncated by PUBLICATION date (what a live system would have received); `extra` user panels are truncated by index.
+  Recompute every signal, the composite and the weights on raw data truncated at each cut date T and compare with the full-sample values up to T. Any difference is look-ahead. Ratings are truncated by PUBLICATION date (what a live system would have received), `extra` user panels are truncated by index.
 
 ## `fmflow.signals.analyst`
 
@@ -501,7 +501,7 @@ Signal registry: every signal the pipeline can rank is a named builder `fn(ctx) 
 Synthetic market + sell-side data with the statistical properties of the real datasets.
 
 - **`class SyntheticConfig(n_stocks: int = 10, n_sessions: int = 1512, start: str = '2016-01-04', n_sectors: int = 2, vol_range: tuple = (0.26, 0.53), market_vol: float = 0.2, market_drift: float = 0.25, sector_vol: float = 0.13, stock_drift_sd: float = 0.15, strength: float = 0.15, z_half_life: int = 63, earnings_every: int = 63, earnings_jump_mult: float = 4.0, analysts_per_stock: tuple = (17, 72), analyst_pool_ratio: float = 0.7, p_publish_at_earnings: float = 0.3, off_event_rate: float = 0.007692307692307693, p_reiterate: float = 0.05, adjust_speed: float = 0.6, p_sticky_down: float = 0.45, p_herd: float = 0.25, optimism_mu: float = np.float64(0.1570037488096647), optimism_sd: float = 0.08, info_weight: float = 0.06, target_noise: float = 0.035, p_late_start: float = 0.25, p_early_stop: float = 0.2, inject_errors: bool = False, seed: int = 7) -> None`**
-  Parameters of the structural synthetic market (see module docstring); presets via classmethods.
+  Parameters of the structural synthetic market (see module docstring), presets via classmethods.
 - **`def describe_dataset(prices: pd.DataFrame, ratings: pd.DataFrame) -> pd.Series`**
   Moments used to calibrate the generator (computed identically on real and synthetic data).
 - **`def generate(cfg: SyntheticConfig = SyntheticConfig()) -> tuple[pd.DataFrame, pd.DataFrame]`**
