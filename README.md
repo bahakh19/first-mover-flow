@@ -38,7 +38,7 @@ Pick the route that suits you. None of them needs Python to be installed beforeh
 ```bash
 git clone https://github.com/bahakh19/first-mover-flow.git
 cd first-mover-flow
-./setup.sh                      # Windows: setup.cmd   (installs uv and Python if needed; a few minutes the first time)
+./setup.sh                      # Windows: setup.cmd   (installs uv and Python if needed, a few minutes the first time)
 ```
 
 Then, from the repository folder (prefix each command with `uv run`, or activate `.venv` first):
@@ -95,11 +95,11 @@ The out-of-sample period never overlaps the development period, but ten of its t
 
 | Objection | Test | Result |
 |---|---|---|
-| "Hindsight universe: it is just long the winners." | Lo (2008) decomposition; causal static vs timing books | **Timing** Sharpe 1.04 (*t* 2.41), never-seen 1.33 (*t* 2.21). Static tilt insignificant, and **negative** out of sample |
+| "Hindsight universe: it is just long the winners." | Lo (2008) decomposition, causal static vs timing books | **Timing** Sharpe 1.04 (*t* 2.41), never-seen 1.33 (*t* 2.21). Static tilt insignificant, and **negative** out of sample |
 | "Fills at the signal close and free shorts are fantasy." | 0–2 day delay × 0–200 bp borrow × 0–30 bp costs | Sharpe 1.06 with a 1-day delay, 100 bp borrow and 10 bp costs, breakeven cost **234 bp** per unit traded |
 | "Smoothed P&L inflates the Sharpe." | Lo (2002) adjusted Sharpe | 1.06 (never-seen 1.06), lag-1 autocorrelation 0.04 |
 | "Zero beta hides crash beta." | Up/down-market betas | Down beta −0.07, positive mean return in the worst market weeks |
-| "You chose the parameters that work." | Multiverse of ~300 specifications (incl. quarterly expiry, 2-day knowledge lag), SPA, PBO, ensemble | **99%** of specifications positive (97% never-seen); selection-free ensemble Sharpe 0.92 (0.86) |
+| "You chose the parameters that work." | Multiverse of ~300 specifications (incl. quarterly expiry, 2-day knowledge lag), SPA, PBO, ensemble | **99%** of specifications positive (97% never-seen), selection-free ensemble Sharpe 0.92 (0.86) |
 | "The new signal adds nothing to breadth." | Same book without LMH, block bootstrap | +0.29 Sharpe (*p* 0.028), never-seen +0.30, pooled P(gain > 0) = 0.94 |
 | "Beating the toolkit is cherry-picking." | Romano–Wolf step-down vs 16 books, reverse SPA | No comparable beats FMF-N (SPA *p* 0.86 / 0.86) |
 | "Ten stocks prove nothing." | Bayesian Sharpe, random-effects meta-analysis of 3 independent samples, empirical-Bayes shrinkage, power | P(signal works in the **next** universe) = **0.96**, pooled IC 0.105, Stouffer *p* = 0.002 |
@@ -195,11 +195,11 @@ flowchart LR
 
 ```
 src/fmflow/
-├── config.py            every tunable number; presets fmf_n, fmf_n_scalable, fmf_b20, fmf_beta_neutral, fmf_vt10, conservative_costs
+├── config.py            every tunable number, presets fmf_n, fmf_n_scalable, fmf_b20, fmf_beta_neutral, fmf_vt10, conservative_costs
 ├── data/                schema.py (contract) · io.py (CSV dialects, Excel, Parquet) · cleaning.py (audit log) · snapshot.py
 │                        (point in time) · normalize.py (anonymise and rescale a raw universe)
 ├── signals/             registry.py (register your own) · breadth.py · leader_herd.py · composite.py · price.py · analyst.py
-├── risk/garch.py        walk-forward GJR-GARCH(1,1)-t;  cache.py: content-addressed on-disk cache
+├── risk/garch.py        walk-forward GJR-GARCH(1,1)-t,  cache.py: content-addressed on-disk cache
 ├── portfolio/           construction.py: legs, IV weights, beta budget / beta-neutral, caps, Ledoit–Wolf vol targeting, tranches
 ├── backtest/engine.py   costs, short-borrow fees, execution delay, breakeven cost, cost sensitivity grids
 ├── analytics/           metrics · inference (IC tests, PSR/DSR, PBO, bootstrap, Fama–MacBeth) · snooping (White, Hansen SPA,
@@ -234,7 +234,7 @@ repository
 * **Causality is tested, not asserted:** Every signal, the composite and the weights are recomputed on truncated data and must match the full run (`truncation_check`). A deliberately leaky control must fail the same test.
 * **One source of truth:** Every number lives in `config.py` and serialises to JSON, so a specification can be fingerprinted before evaluation.
 * **Same construction for every comparison:** Comparables, placebos, leave-one-out runs and the multiverse all build their books with `pipeline.construct_book`, the function the strategy itself uses, with the same costs, borrow fee and execution delay.
-* **Parity with the research notebook:** With the shipped GARCH forecasts, the package reproduces the notebook's weights exactly on both datasets (`tests/test_parity.py`). Re-estimating GARCH from scratch with the default optimiser is exact on one machine but can differ across CPUs, because the short-sample likelihood has near-equal local maxima; `DataConfig(garch_method="grid")` is a deterministic estimator that gives bit-identical forecasts on every machine (out-of-sample Sharpe 1.09 with it, against 1.05).
+* **Parity with the research notebook:** With the shipped GARCH forecasts, the package reproduces the notebook's weights exactly on both datasets (`tests/test_parity.py`). Re-estimating GARCH from scratch with the default optimiser is exact on one machine but can differ across CPUs, because the short-sample likelihood has near-equal local maxima, `DataConfig(garch_method="grid")` is a deterministic estimator that gives bit-identical forecasts on every machine (out-of-sample Sharpe 1.09 with it, against 1.05).
 * **Extensible:** You can register signals, pass `extra` user data and a sector map, and plug in your own GARCH forecasts or allocator.
 
 ## Reproducing the paper
