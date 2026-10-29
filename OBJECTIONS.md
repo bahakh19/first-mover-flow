@@ -1,6 +1,6 @@
 # Objections and answers
 
-This file collects the objections a sceptical quantitative researcher, portfolio manager, risk manager or QIS structurer would raise. Each entry gives the answer, the evidence (with the command or notebook that reproduces it) and the **residual risk** that remains after the test. Numbers refer to the development universe (10 US large caps, 2017–2021) and to the never-seen period (30 stocks, 2024-01-05 to 2026-08-05, pre-registered). The period never overlaps development; ten of the thirty names are the development names (DATA_SOURCES.md §3).
+This file collects some objections that we have raised during the exploration of the datasets that we had and the theoretical limitations that we faced. Each entry gives the answer, the evidence (with the command or notebook that reproduces it) and the **residual risk** that remains after the test. Numbers refer to the development universe (10 US large caps, 2017–2021) and to the never-seen period (30 stocks, 2024-01-05 to 2026-08-05, pre-registered). The period never overlaps development, ten of the thirty names are the development names (DATA_SOURCES.md §3).
 
 Verdicts:
 - **Answered**: the test is designed to break the result, and the result survives.
@@ -12,7 +12,7 @@ Verdicts:
 ## A. Data and look-ahead
 
 **A1. "Target prices are timestamped by day, not by hour. You may be trading on ratings published after the close."** · *Answered*
-Ratings are usable from the session **after** publication (`knowledge_date > pub_date` is checked for every row, and a violation stops the run). A two-session knowledge lag leaves the Sharpe ratio unchanged: 1.13 (development) and 1.06 (never-seen), against 1.13 and 1.05. Truncation tests recompute every signal and weight on data cut at T and require exact equality with the full run; a centred-window control fails the same test. → `tests/test_causality.py`, `robustness.truncation_check`, notebook 02.
+Ratings are usable from the session **after** publication (`knowledge_date > pub_date` is checked for every row, and a violation stops the run). A two-session knowledge lag leaves the Sharpe ratio unchanged: 1.13 (development) and 1.06 (never-seen), against 1.13 and 1.05. Truncation tests recompute every signal and weight on data cut at T and require exact equality with the full run, a centred-window control fails the same test. → `tests/test_causality.py`, `robustness.truncation_check`, notebook 02.
 
 **A2. "Vendors back-fill and revise analyst histories."** · *Open (data-dependent)*
 No backtest can detect back-filling in its own input. Use point-in-time detail feeds (I/B/E/S detail history, FactSet or Bloomberg analyst-level data with publication dates), never consensus snapshots. The cleaning rules R3/R4 catch the commonest symptom, a split applied to one series only. → `DATA.md` §4.
@@ -38,7 +38,7 @@ Rebuilding the full pipeline without each stock gives a Sharpe between 0.80 and 
 **B4. "How was the 30-stock universe chosen? Is it really unseen?"** · *Partly answered*
 The universe is the ten development names plus twenty of today's most covered US large caps (the list is in `notebooks/Data_Gathering.ipynb`). Two consequences follow, and both are tested:
 - **Ten names re-appear** (in a period two years after development ends). Re-running the frozen specification on the **twenty new names only** gives a Sharpe ratio of 0.80 (Calmar 0.98), and leader minus herd keeps its IC (0.105, one-sided *p* = 0.058). The ten development names alone earn 0.31, with too few covered names for a reliable cross-section. The result is not carried by the overlap. → `scripts/overlap_analysis.py` (post hoc, not pre-registered).
-- **The list was chosen knowing which companies grew large:** A dollar-neutral book is exposed to this only through the spread between its long and short legs, and B1 shows that the static tilt towards particular stocks loses money out of sample (Sharpe −0.49). A universe defined by an independent rule (for example index membership on the first day) would be stronger evidence; `fmflow` runs on any such universe unchanged.
+- **The list was chosen knowing which companies grew large:** A dollar-neutral book is exposed to this only through the spread between its long and short legs, and B1 shows that the static tilt towards particular stocks loses money out of sample (Sharpe −0.49). A universe defined by an independent rule (for example index membership on the first day) would be stronger evidence, `fmflow` runs on any such universe unchanged.
 
 ## C. Research process
 
