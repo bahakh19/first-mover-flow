@@ -37,11 +37,11 @@ The data arrive **anonymised** by the provider: stocks are `stock_1` to `stock_1
 | R4 | target change inconsistent with the price change | 0 |
 | accepted | | **5,929** (3,168 up revisions, 1,020 down, 1,260 reiterations, 481 initiations) |
 
-**Price basis:** The prices are split-adjusted closes **without dividends**: the reconciliation matches the unadjusted close exactly, and the dividend-adjusted close less well. For example, stock_5 (JPMorgan) grows 2.49× in the data, the ratio of its public closing prices on 2016-01-04 (63.62) and 2021-12-31 (158.35); with dividends reinvested the multiple would be close to 3×. Strategy returns are therefore price returns. Dividends are ignored in both datasets, which for a dollar-neutral book biases returns only through the dividend-yield spread between the long and short legs.
+**Price basis:** The prices are split-adjusted closes **without dividends**: the reconciliation matches the unadjusted close exactly, and the dividend-adjusted close less well. For example, stock_5 (JPMorgan) grows 2.49× in the data, the ratio of its public closing prices on 2016-01-04 (63.62) and 2021-12-31 (158.35), with dividends reinvested the multiple would be close to 3×. Strategy returns are therefore price returns. Dividends are ignored in both datasets, which for a dollar-neutral book biases returns only through the dividend-yield spread between the long and short legs.
 
 ### 1.2 The ten stocks
 
-The anonymised stocks were identified from public prices in the research notebook (Section 0, ticker reconciliation): for each of the ten, the daily returns in the data have a correlation of 1.0000 (R² 1.0000) with the returns of one public stock's split-adjusted, dividend-unadjusted closing price over 1,510 sessions. The identification is used **only** to interpret results economically (sectors, the 2020 crash, the 2021 growth sell-off); no rule anywhere in the code refers to a specific stock.
+The anonymised stocks were identified from public prices in the research notebook (Section 0, ticker reconciliation): for each of the ten, the daily returns in the data have a correlation of 1.0000 (R² 1.0000) with the returns of one public stock's split-adjusted, dividend-unadjusted closing price over 1,510 sessions. The identification is used **only** to interpret results economically (sectors, the 2020 crash, the 2021 growth sell-off), no rule anywhere in the code refers to a specific stock.
 
 | Id | Company | Total return 2016–21 | Annual vol. | Analysts | Ratings | Fresh revisions | Event clusters | Median active analysts (2017–19) |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
@@ -58,11 +58,11 @@ The anonymised stocks were identified from public prices in the research noteboo
 
 *Fresh revisions: target changes by an analyst whose previous target is still active. Event clusters: (stock, day) pairs with at least five ratings. Median active: analysts with a target at most 252 sessions old.*
 
-What makes this sample hard: ten names only, dominated by technology and semiconductors; one extreme winner (NVDA, 36×); two names with thin coverage (CHGG, BA); and a single regime break (2020). Section 4 of the paper discusses these features.
+What makes this sample hard: ten names only, dominated by technology and semiconductors, one extreme winner (NVDA, 36×), two names with thin coverage (CHGG, BA), and a single regime break (2020). Section 4 of the paper discusses these features.
 
 ### 1.3 Reproducing the development results
 
-Place the two original files in `data/private/` under their original names. The parity test (`tests/test_parity.py::test_development_parity`), `python tasks.py development`, `python tasks.py audit` and the research notebook then run; without the files they skip cleanly.
+Place the two original files in `data/private/` under their original names. The parity test (`tests/test_parity.py::test_development_parity`), `python tasks.py development`, `python tasks.py audit` and the research notebook then run, without the files they skip cleanly.
 
 ---
 
@@ -73,7 +73,7 @@ Place the two original files in `data/private/` under their original names. The 
 | Source | Used for | Licence / terms |
 |---|---|---|
 | Kaggle: [`yijian2427/us-market-analyst-insights-with-full-stock-symbols`](https://www.kaggle.com/datasets/yijian2427/us-market-analyst-insights-with-full-stock-symbols) | target prices: `date`, `ticker`, `firm`, `price_target` (the file has 53,776 rows and 17 columns, including the rating, rating action and a text summary) | MIT, as stated on the dataset page |
-| Yahoo Finance via the `yfinance` package | daily closing prices (`Close`, `auto_adjust=False`: split-adjusted, not dividend-adjusted) | Yahoo's terms of use; the repository ships only normalised, derived prices |
+| Yahoo Finance via the `yfinance` package | daily closing prices (`Close`, `auto_adjust=False`: split-adjusted, not dividend-adjusted) | Yahoo's terms of use, the repository ships only normalised, derived prices |
 
 ### 2.2 Construction (`notebooks/Data_Gathering.ipynb`)
 
@@ -85,7 +85,7 @@ Place the two original files in `data/private/` under their original names. The 
    * brokers numbered in alphabetical order of name (Python string order) → `analyst_1` … `analyst_51`
    * each stock's prices **and** targets divided by its first closing price (2023-01-04), rounded to 4 decimals.
 
-Two checks of the procedure against public values: Apple closed at 126.36 on 2023-01-04 and Tigress Financial's target that day was 210, giving the shipped 1.6619 (= 210 / 126.36); BMO Capital's 267 target on Microsoft on 2023-01-23, against Microsoft's 229.10 close on 2023-01-04, gives the shipped 1.1654.
+Two checks of the procedure against public values: Apple closed at 126.36 on 2023-01-04 and Tigress Financial's target that day was 210, giving the shipped 1.6619 (= 210 / 126.36), BMO Capital's 267 target on Microsoft on 2023-01-23, against Microsoft's 229.10 close on 2023-01-04, gives the shipped 1.1654.
 
 **Frozen files:** The pre-registered test uses the files exactly as shipped:
 
@@ -139,7 +139,7 @@ The map follows from the published ticker list and the alphabetical rule, so it 
 
 ## 3. How the two datasets relate, and what that implies
 
-**The periods never overlap; ten of the names do:** The out-of-sample window (2024-01-05 to 2026-08-05) starts two years after the development data end. Twenty of the thirty names were never used in development, but the ten development names are included. "Never-seen" in this repository and in the paper refers to the **period**; for the names it applies to two thirds of the universe.
+**The periods never overlap, ten of the names do:** The out-of-sample window (2024-01-05 to 2026-08-05) starts two years after the development data end. Twenty of the thirty names were never used in development, but the ten development names are included. "Never-seen" in this repository and in the paper refers to the **period**, for the names it applies to two thirds of the universe.
 
 **Does the overlap drive the result?** It does not. The table below re-runs the frozen specification (leg fraction 0.4, same GARCH forecasts) on each part of the universe separately. This split was not pre-registered: it was run after the overlap was documented.
 
