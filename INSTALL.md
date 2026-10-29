@@ -6,7 +6,7 @@ Python 3.10 to 3.14 on macOS (Intel and Apple Silicon), Windows and Linux. Conti
 
 * **Google Colab:** open any notebook from the README's "Run online" column. Its first cell downloads the repository and installs the package into the Colab session (about a minute). The same cell works in any Jupyter without the package: it uses git if installed (otherwise GitHub's zip archive) and pip (or uv, in environments created by uv)
 * **Binder:** the Binder badge opens JupyterLab with the package installed (the first build takes a few minutes)
-* **GitHub Codespaces:** the Codespaces badge opens VS Code in the browser; the dev container installs everything and registers the "Python (fmflow)" kernel
+* **GitHub Codespaces:** the Codespaces badge opens VS Code in the browser, the dev container installs everything and registers the "Python (fmflow)" kernel
 
 These three routes need the GitHub repository to be **public**. For a fork, set the environment variable `FMFLOW_REPO_URL` to your fork's URL before running a notebook's first cell.
 
@@ -110,7 +110,7 @@ Run it first whenever something breaks, and paste its output into any bug report
 
 ### macOS: JAX on Intel Macs, LightGBM and libomp
 
-* **JAX** publishes no wheels for Intel Macs, so the `gen` extra skips it there. The diffusion model and TimeGAN are then unavailable (`fmflow doctor` says so); everything else works, including the bootstrap and FHS stress tests
+* **JAX** publishes no wheels for Intel Macs, so the `gen` extra skips it there. The diffusion model and TimeGAN are then unavailable (`fmflow doctor` says so), everything else works, including the bootstrap and FHS stress tests
 * **LightGBM** (only for the research notebook, `research` extra) needs the OpenMP runtime on macOS: `brew install libomp`
 
 ### Windows: PowerShell refuses to run `setup.ps1`
@@ -149,13 +149,13 @@ The repository is private. Make it public, or use a fork and set `FMFLOW_REPO_UR
 
 **Cause:** Recent jaxlib wheels need a CPU with AVX instructions (most CPUs since 2011, but not some older or low-power processors).
 
-**Effect:** Only the diffusion model and TimeGAN need JAX. Since version 2.1.0, `fmflow.generative.jax_status()` detects the problem; the JAX tests skip with the reason; notebook 06 runs the bootstrap and FHS generators and skips the two JAX models; `fmflow stress --generator diffusion` explains and suggests `--generator fhs`. Everything else is unaffected. To use the JAX models on such a machine, run them on another computer or build jaxlib from source.
+**Effect:** Only the diffusion model and TimeGAN need JAX. Since version 2.1.0, `fmflow.generative.jax_status()` detects the problem, the JAX tests skip with the reason, notebook 06 runs the bootstrap and FHS generators and skips the two JAX models, `fmflow stress --generator diffusion` explains and suggests `--generator fhs`. Everything else is unaffected. To use the JAX models on such a machine, run them on another computer or build jaxlib from source.
 
 ### GARCH `ConvergenceWarning` messages
 
 **Cause:** `arch` re-enables its own convergence warnings inside `fit()`, overriding filters set by the caller.
 
-**Since 2.1.0** the package passes `show_warning=False` and records each fit's optimiser status in the fit log (`garch_forecast_panel(...)[1]`, columns `optimizer_status` and `new_estimate`). A fit that did not converge is not used; the previous estimate is kept, as before.
+**Since 2.1.0** the package passes `show_warning=False` and records each fit's optimiser status in the fit log (`garch_forecast_panel(...)[1]`, columns `optimizer_status` and `new_estimate`). A fit that did not converge is not used, the previous estimate is kept, as before.
 
 ### Fresh GARCH re-estimation differs slightly from the reference on another computer
 
