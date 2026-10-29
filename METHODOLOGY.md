@@ -48,7 +48,7 @@ LMH is defined when the denominator is at least 3. `leaders_only` and `herders_o
 
 $$w^{\text{target}}_{i,t}=\Big(\tfrac12+\tfrac c2\Big)\frac{1/\hat\sigma_{i,t}}{\sum_{j\in L_t}1/\hat\sigma_{j,t}}\mathbf{1}_{i\in L_t}-\Big(\tfrac12-\tfrac c2\Big)\frac{1/\hat\sigma_{i,t}}{\sum_{j\in S_t}1/\hat\sigma_{j,t}}\mathbf{1}_{i\in S_t}$$
 
-FMF-N uses *c* = 0 (dollar-neutral); FMF-B20 uses *c* = 0.2. *c* is a disclosed constant. It is never timed, because timing net exposure is what manufactured the first-generation strategy's Calmar ratio.
+FMF-N uses *c* = 0 (dollar-neutral), FMF-B20 uses *c* = 0.2. *c* is a disclosed constant. It is never timed, because timing net exposure is what manufactured the first-generation strategy's Calmar ratio.
 
 **Tranches:** The held book is the average of the last *f* = 42 daily targets:
 
@@ -93,7 +93,7 @@ The 13 cross-sectional comparables are:
 
 * **Price signals:** 12-1 and 6-1 momentum, 1-month reversal, 60-day low volatility, betting-against-beta (low 252-day beta), residual momentum (Blitz–Huij–Martens), 52-week-high proximity.
 * **Analyst signals:** consensus target-price upside, 63-day consensus target momentum, low dispersion, classic revision breadth.
-* **Blends:** momentum + low vol + reversal; momentum + revisions.
+* **Blends:** momentum + low vol + reversal, momentum + revisions.
 
 Each is traded with FMF's construction. The three allocations are equal-weight long-only, inverse-volatility long-only, and 12-1 time-series momentum (CTA-style), which are traded natively.
 
@@ -117,19 +117,19 @@ To repeat the study on your own universe: freeze a configuration with `fmflow re
 
 | Question | Tool (module) | Definition |
 |---|---|---|
-| Identity or timing? | `analytics.attribution.lo_decomposition`, `static_timing_books` | Lo (2008): $E[\sum_i w_{i,t-1}r_{i,t}]=\sum_i\mathrm{Cov}(w,r)+\sum_i E[w]E[r]$. Causal version: static book $\bar w_{i,t}$ (expanding mean of past weights) and timing book $w_{i,t}-\bar w_{i,t}$; both tradable, summing to the strategy |
-| Does any specification really work? | `analytics.snooping.spa_test`, `reality_check` | Hansen (2005) SPA with consistent recentring; White (2000) Reality Check; stationary bootstrap of the $T\times K$ matrix of performance differentials |
+| Identity or timing? | `analytics.attribution.lo_decomposition`, `static_timing_books` | Lo (2008): $E[\sum_i w_{i,t-1}r_{i,t}]=\sum_i\mathrm{Cov}(w,r)+\sum_i E[w]E[r]$. Causal version: static book $\bar w_{i,t}$ (expanding mean of past weights) and timing book $w_{i,t}-\bar w_{i,t}$, both tradable, summing to the strategy |
+| Does any specification really work? | `analytics.snooping.spa_test`, `reality_check` | Hansen (2005) SPA with consistent recentring, White (2000) Reality Check, stationary bootstrap of the $T\times K$ matrix of performance differentials |
 | Which comparables does it beat? | `analytics.snooping.romano_wolf` | Romano–Wolf (2005) StepM, studentised, step-down adjusted p-values (FWER) |
 | Is a Sharpe difference real? | `analytics.snooping.sharpe_diff_test` | Circular block bootstrap of paired returns (Ledoit–Wolf 2008, basic bootstrap) |
-| How much of the result is the specification? | `robustness.multiverse` | One-at-a-time, full-factorial or random joint draws over any `StrategyConfig` / `DataConfig` field; returns the family's daily returns for SPA, PBO and DSR, and the selection-free ensemble |
-| What is the Sharpe ratio, given that most strategies fail? | `analytics.bayes.bayesian_sharpe` | Bayesian bootstrap (Rubin 1981) of weekly returns, importance-reweighted by a prior $SR\sim N(m,s^2)$ on the annual Sharpe ratio; flat, $N(0,1)$ and $N(0,0.5)$ priors reported |
-| What do three samples say together, and about the next one? | `analytics.bayes.random_effects_meta` | $y_j\sim N(\theta_j,s_j^2)$, $\theta_j\sim N(\mu,\tau^2)$, $\tau\sim$ half-Cauchy; $\mu$ integrated analytically, $\tau$ on a grid; predictive $\theta_{new}\sim N(\mu,\tau^2)$ |
+| How much of the result is the specification? | `robustness.multiverse` | One-at-a-time, full-factorial or random joint draws over any `StrategyConfig` / `DataConfig` field, returns the family's daily returns for SPA, PBO and DSR, and the selection-free ensemble |
+| What is the Sharpe ratio, given that most strategies fail? | `analytics.bayes.bayesian_sharpe` | Bayesian bootstrap (Rubin 1981) of weekly returns, importance-reweighted by a prior $SR\sim N(m,s^2)$ on the annual Sharpe ratio, flat, $N(0,1)$ and $N(0,0.5)$ priors reported |
+| What do three samples say together, and about the next one? | `analytics.bayes.random_effects_meta` | $y_j\sim N(\theta_j,s_j^2)$, $\theta_j\sim N(\mu,\tau^2)$, $\tau\sim$ half-Cauchy, $\mu$ integrated analytically, $\tau$ on a grid, predictive $\theta_{new}\sim N(\mu,\tau^2)$ |
 | What is the best of a search worth? | `analytics.bayes.shrink_normal_means` | Positive-part James–Stein shrinkage of the family's t-statistics towards their mean |
 | Evidence for vs against an effect | `analytics.bayes.bayes_factor_normal` | $BF_{10}$ for $\theta>0$ with an $N(0,g^2)$ prior against $\theta=0$ |
-| What could the sample detect? | `analytics.power.mde_ic`, `ic_power`, `simulate_power` | MDE $=(z_{1-\alpha}+z_{1-\beta})/\sqrt{(N-1)M}$; Monte Carlo power of the full pipeline on the calibrated generator |
+| What could the sample detect? | `analytics.power.mde_ic`, `ic_power`, `simulate_power` | MDE $=(z_{1-\alpha}+z_{1-\beta})/\sqrt{(N-1)M}$, Monte Carlo power of the full pipeline on the calibrated generator |
 | Is the Sharpe inflated by smoothing? | `analytics.metrics.lo_adjusted_sharpe` | $\eta(q)=q/\sqrt{q+2\sum_{k\le L}(q-k)\rho_k}$ (Lo 2002) |
 | Crash beta? | `analytics.metrics.conditional_betas` | Weekly regression on $\max(m,0)$ and $\min(m,0)$ with HAC errors |
-| Implementation? | `backtest.engine.cost_sensitivity`, `breakeven_cost_bps` | Grid over costs, borrow and execution delay; breakeven = mean(gross − borrow) / mean(traded) |
+| Implementation? | `backtest.engine.cost_sensitivity`, `breakeven_cost_bps` | Grid over costs, borrow and execution delay, breakeven = mean(gross − borrow) / mean(traded) |
 | Causality of a new signal? | `robustness.truncation_check` | Pipeline on data truncated at T must equal the full run up to T for every signal, the composite and the weights |
 
 ## 10. Generative stress testing (`fmflow.generative`, optional `[gen]` extra)
