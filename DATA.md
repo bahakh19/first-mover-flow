@@ -1,6 +1,6 @@
 # Data outline
 
-*Where the two datasets come from (proprietary development data; Kaggle and Yahoo Finance for the open data), their coverage, the overlap between them and their licences: see [DATA_SOURCES.md](DATA_SOURCES.md).*
+*Where the two datasets come from (proprietary development data, Kaggle and Yahoo Finance for the open data), their coverage, the overlap between them and their licences: see [DATA_SOURCES.md](DATA_SOURCES.md).*
 
 `fmflow` needs **two long-format tables**. Nothing else is required: no sector map, no fundamentals, no index weights. This file defines the contract, the cleaning rules applied on ingestion, the point-in-time conventions, how to map common vendor feeds, and how the synthetic generator was calibrated.
 
@@ -54,9 +54,9 @@ Column names are case-insensitive and surrounding whitespace is ignored. Values 
 | Requirement | Why |
 |---|---|
 | ≥ 252 sessions before the first evaluated day | target expiry (252), LMH window (126), 12-1 momentum, GARCH needs 250 observations |
-| ≥ 6 stocks with a valid score on a session | ranks need ≥ 5 names; legs need 2 × k names |
+| ≥ 6 stocks with a valid score on a session | ranks need ≥ 5 names, legs need 2 × k names |
 | ≥ 3 analysts revising a stock within 63 sessions | breadth is undefined below `breadth_min_n = 3` |
-| some multi-analyst days (≥ 5 same-day ratings) | information events define leaders and herder windows; without them LMH falls back to the quiet-period leader rule |
+| some multi-analyst days (≥ 5 same-day ratings) | information events define leaders and herder windows, without them LMH falls back to the quiet-period leader rule |
 
 Coverage observed in the two real datasets is given in §6. Coverage below these levels does not break the pipeline: the affected signals are `NaN` and drop out of the composite on those days.
 
@@ -79,7 +79,7 @@ Every rule was fixed before any return was examined. Each one writes a row to th
 |---|---|---|
 | R1 | unparseable or non-positive target, or unparseable date: drop | – |
 | R2 | missing analyst identifier: drop | – |
-| – | stock absent from the price file: drop; duplicate (date, stock, analyst) keeps the last | – |
+| – | stock absent from the price file: drop, duplicate (date, stock, analyst) keeps the last | – |
 | R6 | **knowledge date** = first session strictly after publication. Ratings published after the last session are dropped | `knowledge_lag = 1` |
 | – | reference price = last close on or before publication (`merge_asof`, backward) | – |
 | R3 | implausible level: target / price outside (0.2, 5.0) is dropped (fat-finger values, unadjusted splits) | `tp_ratio_bounds` |
@@ -129,7 +129,7 @@ To reproduce the development results, place the original `MarketData.csv` and `R
 The generator is a **structural** model rather than a resampler. That lets you switch the economics on and off and check that the pipeline finds alpha only when it exists.
 
 * **Returns:** Market factor with GJR-GARCH(1,1)-t volatility, plus sector factors, persistent stock drifts, a latent fundamental state *z* (AR(1), quarterly half-life, shocked at earnings), and earnings-day jumps
-* **Analysts:** Each stock is covered by analysts drawn from a shared pool (multi-stock coverage). They publish around earnings, which creates clusters of five or more same-day ratings, and occasionally in between. Targets chase price with partial adjustment and an analyst-specific optimism. **First movers** see *z* early; **herders** copy the latest cluster's direction 3–15 sessions later, cuts are sticky
+* **Analysts:** Each stock is covered by analysts drawn from a shared pool (multi-stock coverage). They publish around earnings, which creates clusters of five or more same-day ratings, and occasionally in between. Targets chase price with partial adjustment and an analyst-specific optimism. **First movers** see *z* early, **herders** copy the latest cluster's direction 3–15 sessions later, cuts are sticky
 * **Presets:**
   * `development_like` reproduces the development data
   * `open_universe_like` reproduces the open universe
