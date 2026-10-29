@@ -27,7 +27,7 @@ Every number below is produced by the research notebook (`notebooks/Research_not
 
 *Gen-1 RTB is the first-generation strategy. Its Calmar came from timed net exposure: its selection book alone (row 4) has a development Sharpe of 0.63. FMF-N is the market-neutral replacement. FMF-B20 adds a constant 0.2 beta budget: Calmar 1.82 (development), 2.17 (holdout), 1.66 (full), with a maximum drawdown of −10.8%.*
 
-**Signal evidence** (development, rank IC at 21 sessions; Fama–MacBeth controls: 12-1 and 6-1 momentum, 1-month reversal, 60-day low volatility):
+**Signal evidence** (development, rank IC at 21 sessions, Fama–MacBeth controls: 12-1 and 6-1 momentum, 1-month reversal, 60-day low volatility):
 
 | Signal | IC5 | IC21 | IC63 | Hit rate | Newey–West *t* | Phase *t* | *p* (one-sided) | Fama–MacBeth *t* |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -39,9 +39,9 @@ Every number below is produced by the research notebook (`notebooks/Research_not
 | leaders only | 0.039 | 0.066 | 0.051 | 57% | 1.28 | 1.03 | 0.155 | 0.85 |
 | herders only | −0.123 | −0.084 | −0.148 | 39% | −0.78 | – | – | −0.10 |
 
-*Newey–West t with 21 lags over-rejects with overlapping 21-session labels (about 9% at a nominal 5%); the phase-averaged test (`fmflow.analytics.inference.ic_phase_test`) has the nominal size and gives the p-values. Phase t and p are what `scripts/reproduce_development.py` prints (`signal_ic21_dev.csv`).*
+*Newey–West t with 21 lags over-rejects with overlapping 21-session labels (about 9% at a nominal 5%), the phase-averaged test (`fmflow.analytics.inference.ic_phase_test`) has the nominal size and gives the p-values. Phase t and p are what `scripts/reproduce_development.py` prints (`signal_ic21_dev.csv`).*
 
-**Placebos** (Sharpe; the identical construction is applied to each counterfeit score):
+**Placebos** (Sharpe, the identical construction is applied to each counterfeit score):
 
 | Window | IID scores | Stock-label permutation | Circular time-shift |
 |---|---:|---:|---:|
@@ -99,7 +99,7 @@ Every number below is produced by the research notebook (`notebooks/Research_not
 
 ## 4. Out of sample: 30 stocks over a never-seen period, 2024-01-05 to 2026-08-05 (pre-registered)
 
-The period starts two years after the development data end. Twenty of the thirty names were never used in development; ten are the development names (DATA_SOURCES.md §3).
+The period starts two years after the development data end. Twenty of the thirty names were never used in development, ten are the development names (DATA_SOURCES.md §3).
 
 Registration `configs/oos_open_universe_preregistration.json`, fingerprint `0b2b0792fd357d61`, written before any return was computed.
 
@@ -118,13 +118,13 @@ Registration `configs/oos_open_universe_preregistration.json`, fingerprint `0b2b
 | **leader_minus_herd** | **0.096** | 1.80 | **0.042** | 53% |
 | composite | 0.073 | 1.56 | 0.065 | 59% |
 
-**Placebos:** IID p = 0.027; stock-label permutation p = 0.056; circular time-shift p = 0.226. The permutation value is the research notebook's, which draws unrestricted permutations here, so a few stocks keep their own signal in each draw. The package (`fmflow evaluate --placebo`, `scripts/reproduce_open_universe.py --placebo`) draws derangements, in which no stock keeps its own signal, as the development placebos above do. It gives p = 0.046; the other two p-values are identical.
+**Placebos:** IID p = 0.027, stock-label permutation p = 0.056, circular time-shift p = 0.226. The permutation value is the research notebook's, which draws unrestricted permutations here, so a few stocks keep their own signal in each draw. The package (`fmflow evaluate --placebo`, `scripts/reproduce_open_universe.py --placebo`) draws derangements, in which no stock keeps its own signal, as the development placebos above do. It gives p = 0.046, the other two p-values are identical.
 
 **After the market and the four price-control books,** alpha is 7.3% a year (*t* = 1.79, R² = 0.47).
 
-**Comparables, same construction:** FMF-N ranks 2nd of 14 cross-sectional books on both Sharpe and Calmar; target-price momentum is 1st (1.14 / 1.44). The market and CTA-style trend have higher Sharpe ratios in this bull window, but with betas of 1.00 and 0.43. A 50/50 blend with FMF-N raises the Sharpe and Calmar of all 16 comparables.
+**Comparables, same construction:** FMF-N ranks 2nd of 14 cross-sectional books on both Sharpe and Calmar, target-price momentum is 1st (1.14 / 1.44). The market and CTA-style trend have higher Sharpe ratios in this bull window, but with betas of 1.00 and 0.43. A 50/50 blend with FMF-N raises the Sharpe and Calmar of all 16 comparables.
 
-**Post hoc: is the result carried by the ten development names?** (`scripts/overlap_analysis.py`; same frozen specification and GARCH forecasts)
+**Post hoc: is the result carried by the ten development names?** (`scripts/overlap_analysis.py`, same frozen specification and GARCH forecasts)
 
 | Universe | Net Sharpe | CAGR | Max DD | Calmar | LMH IC21 (*p*) |
 |---|---:|---:|---:|---:|---:|
@@ -159,8 +159,8 @@ Registration `configs/oos_open_universe_preregistration.json`, fingerprint `0b2b
 | Reverse SPA (does any of 16 comparables beat FMF-N?): *p* | 0.86 | 0.86 |
 | Marginal value of leader-minus-herd: ΔSharpe (*p*) | +0.29 (0.028) | +0.30 (0.25) |
 
-**Pooled across the three non-overlapping periods** (development, holdout, never-seen period): random-effects LMH IC 0.105 (90% HDI 0.033 to 0.179); P(IC > 0 in the next universe) 0.96; Stouffer *p* 0.002; pooled Sharpe 1.10 with P(SR > 0 next universe) 0.96. James–Stein shrinkage over the 18 development candidates reduces LMH's *t* from 2.46 to 1.06: the development search alone is suggestive, the replication is the evidence.
+**Pooled across the three non-overlapping periods** (development, holdout, never-seen period): random-effects LMH IC 0.105 (90% HDI 0.033 to 0.179), P(IC > 0 in the next universe) 0.96, Stouffer *p* 0.002, pooled Sharpe 1.10 with P(SR > 0 next universe) 0.96. James–Stein shrinkage over the 18 development candidates reduces LMH's *t* from 2.46 to 1.06: the development search alone is suggestive, the replication is the evidence.
 
-**Generative path risk** (pooled samples, 1,000 five-year paths, posterior-predictive drift): Diffusion-FHS median Calmar 0.70, 5% maximum drawdown −34%, P(five-year loss) 14%; block bootstrap 0.91 / −26%; FHS 0.84 / −29%. TimeGAN fails the fidelity battery and is excluded. The binding stress is a momentum crash: the 5% quantile of the three-month return falls to between −14% and −17%, against about −8% unconditionally.
+**Generative path risk** (pooled samples, 1,000 five-year paths, posterior-predictive drift): Diffusion-FHS median Calmar 0.70, 5% maximum drawdown −34%, P(five-year loss) 14%, block bootstrap 0.91 / −26%, FHS 0.84 / −29%. TimeGAN fails the fidelity battery and is excluded. The binding stress is a momentum crash: the 5% quantile of the three-month return falls to between −14% and −17%, against about −8% unconditionally.
 
 Objection-by-objection answers, with residual risk: [OBJECTIONS.md](OBJECTIONS.md).
