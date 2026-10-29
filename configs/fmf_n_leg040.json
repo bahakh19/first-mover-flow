@@ -1,0 +1,44 @@
+{
+  "name": "FMF-N (leg fraction 0.4)",
+  "signals": [
+    "breadth_63",
+    "event_breadth_63",
+    "breadth_resid_mom",
+    "leader_minus_herd"
+  ],
+  "leader_gap": 10,
+  "herd_lo": 3,
+  "herd_hi": 15,
+  "lmh_window": 126,
+  "lmh_min_n": 3,
+  "breadth_window": 63,
+  "breadth_min_n": 3,
+  "event_breadth_min_n": 2,
+  "rank_min_names": 5,
+  "k": null,
+  "leg_fraction": 0.4,
+  "k_min": 2,
+  "tranche_period": 42,
+  "allocator": "IV-GJR",
+  "net_exposure": 0.0,
+  "cost_bps": 5.0,
+  "data": {
+    "annualization": 252,
+    "min_calendar_coverage": 0.5,
+    "price_ffill_limit": 5,
+    "knowledge_lag": 1,
+    "tp_expiry_days": 252,
+    "tp_ratio_bounds": [
+      0.2,
+      5.0
+    ],
+    "revision_excess_bounds": [
+      0.3333333333333333,
+      3.0
+    ],
+    "event_min_ratings": 5,
+    "min_analysts": 3,
+    "garch_min_obs": 250,
+    "garch_refit": 21
+  }
+}

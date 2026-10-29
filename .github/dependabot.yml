@@ -1,0 +1,10 @@
+# Only the GitHub Actions are updated automatically. Python dependencies are not: Dependabot's pip and uv ecosystems
+# raise the lower bounds in pyproject.toml to the newest release, which would silently drop support for the older
+# versions the package is tested against (CI job "oldest-dependencies"). Refresh the lock file by hand instead:
+#   uv lock --upgrade && python tasks.py test
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

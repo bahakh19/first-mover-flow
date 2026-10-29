@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fmflow"
+version = "2.2.4"
+description = "First-Mover Flow: zero-beta stock selection from the flow and timing of sell-side analyst revisions"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "Khaled Baha", email = "Khaled.Cheikh.Baha@gmail.com"}]
+keywords = ["quantitative finance", "alpha", "analyst revisions", "long-short equity", "backtesting",
+            "small-sample inference", "generative stress testing", "QIS"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Framework :: Jupyter",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = ["numpy>=1.24", "pandas>=2.1.2", "scipy>=1.10", "statsmodels>=0.14.5", "arch>=6.2"]
+
+[project.optional-dependencies]
+# figures
+plot = ["matplotlib>=3.7"]
+# run and explore the notebooks (JupyterLab, kernel, headless execution)
+notebooks = ["matplotlib>=3.7", "jupyterlab>=4.0", "ipykernel>=6.0", "nbclient>=0.7", "nbformat>=5.9",
+             # the newest argon2-cffi-bindings (a JupyterLab dependency) has no wheel for Intel Macs: keep the last one that has
+             "argon2-cffi-bindings<26; sys_platform == 'darwin' and platform_machine == 'x86_64'"]
+# diffusion model and TimeGAN (JAX has no wheels for Intel Macs; there the other generators still work)
+gen = ["jax>=0.4.30; sys_platform != 'darwin' or platform_machine == 'arm64'", "scikit-learn>=1.3"]
+# Excel and Parquet inputs
+io = ["openpyxl>=3.1", "pyarrow>=14"]
+# the full research notebook (needs the proprietary development data)
+research = ["hmmlearn>=0.3", "lightgbm>=4.0", "scikit-learn>=1.3", "yfinance>=0.2.40"]
+# rebuild the open dataset from Kaggle and Yahoo Finance (notebooks/Data_Gathering.ipynb)
+data = ["kaggle>=1.6", "yfinance>=0.2.40", "pyarrow>=14"]
+# tests, lint, notebook execution
+dev = ["pytest>=7.4", "pytest-xdist>=3.5", "pytest-cov>=4.1", "ruff>=0.17", "pre-commit>=3.5", "matplotlib>=3.7",
+       "nbformat>=5.9", "nbclient>=0.7", "ipykernel>=6.0", "scikit-learn>=1.3"]
+all = ["fmflow[plot,notebooks,gen,io,research,data,dev]"]
+
+[project.urls]
+Homepage = "https://github.com/bahakh19/first-mover-flow"
+Documentation = "https://github.com/bahakh19/first-mover-flow#readme"
+Issues = "https://github.com/bahakh19/first-mover-flow/issues"
+Paper = "https://github.com/bahakh19/first-mover-flow/blob/main/docs/paper.pdf"
+
+[project.scripts]
+fmflow = "fmflow.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+fmflow = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["slow: long-running tests (GARCH estimation, placebo loops, neural networks)"]
+
+[tool.coverage.run]
+source = ["fmflow"]
+omit = ["*/generative/timegan.py"]
+
+[tool.ruff]
+extend-exclude = ["scripts/audit", "notebooks/*.ipynb"]          # notebook cells executed in a shared namespace (see scripts/reproduce_audit.py)
+line-length = 145
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "NPY"]
+ignore = ["E731", "B008", "E741", "B023"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["fmflow"]
+known-local-folder = ["conftest", "helpers"]

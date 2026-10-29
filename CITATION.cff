@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite it as below."
+title: "First-Mover Flow (fmflow): zero-beta stock selection from the flow and timing of analyst revisions"
+version: 2.2.4
+date-released: 2026-10-29
+license: MIT
+repository-code: "https://github.com/bahakh19/first-mover-flow"
+authors:
+  - family-names: "Baha"
+    given-names: "Khaled"
+preferred-citation:
+  type: article
+  title: "Who Revises First? Analyst Revision Flow and Zero-Beta Stock Selection in Concentrated Equity Portfolios"
+  authors:
+    - family-names: "Baha"
+      given-names: "Khaled"
+  year: 2026
+  status: preprint

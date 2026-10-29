@@ -1,0 +1,44 @@
+# private data: never commit
+data/private/*
+!data/private/.gitkeep
+data/synthetic/*
+!data/synthetic/.gitkeep
+# raw downloads and rebuilds from notebooks/Data_Gathering.ipynb (tickers and dollar levels are not redistributed)
+data/raw/
+data/rebuilt/
+# credentials: never commit
+kaggle.json
+.env
+# GARCH cache
+.fmflow_cache/
+
+# outputs
+results/
+*.png
+!docs/figures/*.png
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.python-version.local
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+.DS_Store
+
+# editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+Thumbs.db
+*.swp
+# notebook runtime
+.virtual_documents/

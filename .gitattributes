@@ -1,0 +1,26 @@
+# Normalise line endings in the repository; check out with the platform's native endings, except where a tool needs LF.
+* text=auto
+*.sh text eol=lf
+setup.sh text eol=lf
+*.py text eol=lf
+*.ipynb text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.csv text eol=lf
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+# binary files: never touched
+*.pdf binary
+*.png binary
+*.gz binary
+*.zip binary
+*.xlsx binary
+*.parquet binary
+uv.lock text eol=lf linguist-generated=true
+docs/API.md linguist-generated=true
+# keep large notebooks out of the language statistics
+*.ipynb linguist-documentation=true

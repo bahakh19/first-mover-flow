@@ -1,0 +1,15 @@
+name: Feature or research request
+description: A new signal, test, data source or workflow
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you want to do, and why?
+      description: For a new signal or test, say what it would show and which data it needs.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposed approach (optional)

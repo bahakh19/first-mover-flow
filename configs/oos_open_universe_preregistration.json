@@ -1,0 +1,51 @@
+{
+  "title": "Out-of-sample test of the frozen First-Mover Flow specification on a never-seen universe",
+  "dataset": {
+    "prices": "data/open/MarketData_Normalized.csv",
+    "ratings": "data/open/Ratings_Normalized.csv",
+    "universe": "30 stocks, 2023-01-04 .. 2026-08-05 (899 sessions); 2,373 ratings from 51 analysts"
+  },
+  "looked_at_before_registration": [
+    "file structure, date range, first/last normalised prices, rating counts per stock",
+    "cleaning log",
+    "signal coverage and the number of names with a valid composite (no returns, no ICs)"
+  ],
+  "frozen_from_development": {
+    "signals": [
+      "breadth_63",
+      "event_breadth_63",
+      "breadth_resid_mom",
+      "leader_minus_herd"
+    ],
+    "lmh": {
+      "leader_gap": 10,
+      "herd_lo": 3,
+      "herd_hi": 15,
+      "window": 126,
+      "min_n": 3
+    },
+    "tranche_period": 42,
+    "allocator": "IV-GJR",
+    "net_exposure": 0.0,
+    "cost_bps": 5.0,
+    "data_rules": "DataConfig defaults"
+  },
+  "transfer_choices": {
+    "primary": "leg fraction 0.4 of names with a valid composite score each session: k_t = max(2, floor(0.4 * N_t)) (the development choice k = 4 of N = 10; with variable coverage the fraction is the transferable quantity)",
+    "secondary": "literal k = 4 names per leg",
+    "evaluation_window": "2024-01-05 .. 2026-08-05 (647 sessions) after a 252-session warm-up (target expiry 252, GJR-GARCH needs 250 observations, LMH window 126)",
+    "sub_periods": "two halves of the evaluation window, reported for stability"
+  },
+  "tests": [
+    "net Sharpe, CAGR, max drawdown, Calmar",
+    "CAPM beta and alpha vs the equal-weight market of the 30 stocks (weekly, HAC)",
+    "factor attribution vs the four price-control books built the same way",
+    "placebos: IID scores, stock-label permutation, circular time-shift",
+    "rank IC (21 sessions) of the composite and of each signal, phase-averaged test",
+    "PSR; DSR over the two pre-registered variants",
+    "institutional comparables built with the same construction"
+  ],
+  "decision_rule": "No parameter is changed after this file is hashed. Results are reported as they come out.",
+  "sha256_16": "0b2b0792fd357d61",
+  "registered_utc": "2026-10-26T02:19:14Z"
+}

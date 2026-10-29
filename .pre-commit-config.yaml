@@ -1,0 +1,29 @@
+# pre-commit install --hook-type pre-commit --hook-type pre-push
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.3
+    hooks:
+      - id: ruff
+        args: [--fix]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=6000]
+      - id: detect-private-key
+  - repo: local
+    hooks:
+      - id: no-private-data
+        name: never commit the proprietary development data
+        entry: data/private/ must stay empty in git (only .gitkeep)
+        language: fail
+        files: ^data/private/(?!\.gitkeep$)
+      - id: fast-tests
+        name: fast tests (before push)
+        entry: python tasks.py test
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
