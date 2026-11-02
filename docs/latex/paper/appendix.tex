@@ -1,0 +1,56 @@
+\section{Data cleaning log (development universe)}\label{app:cleaning}
+
+\begin{table}[h]
+\centering\small
+\begin{adjustbox}{max width=\textwidth}\begin{tabular}{lllr}
+\toprule
+Dataset & Check & Action & Rows\\
+\midrule
+Prices & clean & Non-sessions removed (coverage $<50\%$) & 55\\
+Ratings & R1 & Unparseable / non-positive target & 9\\
+Ratings & R2 & Missing analyst identifier & 47\\
+Ratings & R3 & TP/P outside (0.2, 5.0) & 2\\
+Ratings & R4 & Target change inconsistent with price change (excess outside (0.33, 3.0)) & 0\\
+\bottomrule
+\end{tabular}\end{adjustbox}
+\par\smallskip\begin{minipage}{0.9\textwidth}\footnotesize Over the never-seen period the same rules remove eight ratings published after the last session and two implausible targets.\end{minipage}
+\end{table}
+
+\section{Signal and comparable definitions}\label{app:defs}
+
+Every signal is oriented so that higher is more attractive, and uses data known at $t$. Price signals: 12-1 momentum $\ln P_{t-21}-\ln P_{t-252}$, 6-1 momentum $\ln P_{t-21}-\ln P_{t-126}$, reversal $-(\ln P_t-\ln P_{t-21})$, low volatility $-\mathrm{sd}_{60}(r)$, betting-against-beta $-\hat\beta_{252}$ on the equal-weight market, residual momentum, the 231-session sum of market-residual returns divided by their standard deviation and lagged 21 sessions, 52-week high $P_t/\max_{252}P$. Analyst signals: consensus upside $\ln(\mathrm{median}\,TP/P)$, target-price momentum $\Delta_{63}\ln(\mathrm{median}\,TP)$, low dispersion $-\mathrm{sd}(\ln TP)$, classic breadth $B_{i,t}$. Blends: equal-weight ranks of (12-1 momentum, low volatility, reversal) and of (12-1 momentum, breadth). Allocations: equal-weight and inverse-60-day-volatility long-only, time-series momentum (long or short each stock by the sign of its 12-1 return, rebalanced monthly).
+
+\section{Pre-registrations}\label{app:prereg}
+
+The hypotheses of each audit round and the out-of-sample transfer rules were serialised to JSON and hashed (SHA-256, first 16 hexadecimal characters) before any outcome was computed. The notebook verifies the out-of-sample file (\texttt{configs/oos\_open\_universe\_preregistration.json}, hash \texttt{0b2b0792fd357d61}) before printing any result. The file fixes the frozen parameters, the primary and secondary leg rules, the warm-up, the evaluation window, the list of tests, and the rule that nothing is changed afterwards.
+
+\section{Development universe identification}
+
+From my reconciliation of return signatures against public closing prices, the ten development series are large US technology, consumer, industrial and financial names (stock\_1 AAPL, stock\_2 BA, stock\_3 CHGG, stock\_4 INTC, stock\_5 JPM, stock\_6 MSFT, stock\_7 NKE, stock\_8 NVDA, stock\_9 PANW, stock\_10 QCOM). The identification serves only for interpretation, no rule uses it.
+
+\section{Generative models: specification}
+
+\para{Diffusion-FHS:} For each channel $c$ (FMF-N, equal-weight market, 12--1 momentum book), standardised returns $x_{c,t}$ follow a GJR-GARCH(1,1) recursion $\sigma^2_{c,t+1}=\omega_c+(\alpha_c+\gamma_c\mathbf 1_{e_{c,t}<0})e^2_{c,t}+\beta_c\sigma^2_{c,t}$, with $e_{c,t}=\sigma_{c,t}z_{c,t}$. The parameters $(\alpha,\gamma,\beta)$ are estimated by Student-t quasi-likelihood on the pooled samples, persistence is capped at 0.99, and $\omega$ is set by variance targeting. A conditional DDPM learns $p(u_t\mid c_t)$, where $u_t\in\mathbb R^3$ are the normal scores of the innovation vector $z_t$ (rank-based Gaussian quantile transform) and $c_t$ is the vector of standardised log volatilities. Draws go back to $z_t$ through the empirical quantile functions, extended beyond the sample with standardised Student-t tails using the GARCH degrees of freedom. Denoiser: residual MLP, three blocks of width 128, SiLU, sinusoidal time embedding. Training: cosine schedule with $T=100$ steps \citep{nichol2021}, simplified $\epsilon$-prediction loss, Adam with warm-up and cosine decay, EMA of weights at 0.999, early stopping on the last 15\% of each sample. To simulate, I alternate one step of the GARCH recursion with a 50-step strided ancestral sampler \citep{song2021} that takes the current volatility state as its condition. Each day the shock vectors are moment-matched across paths (mean zero, empirical standard deviation). Volatility states may not leave the observed range plus half a standard deviation on each side.
+
+\para{Baselines:} The stationary bootstrap has a mean block of 21 days. FHS uses the same GJR-GARCH dynamics with empirical residual vectors resampled jointly. TimeGAN follows \citet{yoon2019}, with single-layer GRUs (hidden size 24), 24-day windows, and 1,500 embedding, 1,500 supervised and 2,000 joint iterations.
+
+\para{Fidelity battery:} Moments, the autocorrelation of absolute returns (lags 1--10), cross-correlations and 5\% tail dependence, a discriminative score from a gradient-boosting classifier on window features and raw values, with real windows split in time order and a one-window gap, and a memorisation ratio from Euclidean nearest-neighbour distances to training windows relative to held-out real windows.
+
+\section{Software architecture}
+
+The package \texttt{fmflow} is organised by responsibility:
+\begin{itemize}
+  \item \texttt{data}: the contract, cleaning with an audit log, and the point-in-time snapshot
+  \item \texttt{signals}: the registry of built-in and user signals
+  \item \texttt{risk}: walk-forward GJR-GARCH and an on-disk cache
+  \item \texttt{portfolio}: legs, allocators, beta neutrality, caps, volatility targeting and tranches
+  \item \texttt{backtest}: costs, borrow and execution delay
+  \item \texttt{analytics}: metrics, inference, snooping-robust tests, Bayesian tools, attribution and power
+  \item \texttt{robustness}: placebos, leave-one-out, the multiverse and truncation checks
+  \item \texttt{generative}, \texttt{production} (book, trades, risk report, signal monitor) and \texttt{index} (QIS index levels and rulebook)
+\end{itemize}
+All tunable numbers sit in two frozen configuration classes that serialise to JSON and can be fingerprinted before evaluation. A command-line interface exposes the workflows. Ten notebooks cover data ingestion, signal research, construction and risk, robustness and inference, generative stress testing, QIS index construction, the PM's daily workflow and a full pre-registered research cycle on a user's own universe.
+
+\section{Reproducibility}
+
+The repository (\texttt{first-mover-flow}) contains a self-contained Python package, \texttt{fmflow}. It runs the full pipeline from two raw tables (daily prices, analyst target prices with publication dates) to daily weights and net returns, with modules for the data contract and audited cleaning, the point-in-time snapshot, signals, GJR-GARCH risk, portfolio construction and the backtest. The validation battery of this paper is included: phase-averaged IC tests, PSR/DSR, CSCV, placebos through the identical construction, leave-one-out rebuilds, the 13 institutional comparables and three allocations, and a pre-registration utility that fingerprints a specification before evaluation. A structural synthetic data generator, calibrated to both universes, checks that the pipeline finds no alpha in a null world. More than 100 unit, causality (truncation) and parity tests run in continuous integration on Linux and Windows. With the notebook's GARCH forecasts the package reproduces the research notebook's weights to within $5\times10^{-13}$ on the open universe, and exactly on the development universe on the machine that produced them. The development forecasts come from the proprietary prices and are not distributed, re-estimated on a second machine they move the weights by at most 0.019 and the 2017--2021 Sharpe ratio by less than 0.01, with the same names long and short every day. Re-estimating GARCH from scratch is exact on one machine but not across machines. On a few hundred observations the GJR-GARCH-t likelihood has local maxima of nearly equal height, and where a gradient optimiser stops depends on the floating-point path of the processor (a different BLAS kernel moves the out-of-sample Sharpe ratio from 1.05 to 1.02). The package therefore also has a deterministic grid-likelihood estimator with variance targeting, it is bit-identical across machines and gives Sharpe ratios of 1.09 out of sample and 1.12 over 2017--2021. The open data, the notebook that rebuilds them from public sources, and the registration file are distributed. The proprietary development data are not.

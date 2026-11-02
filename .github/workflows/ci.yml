@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "ruff==0.17.3"          # same version as .pre-commit-config.yaml: new releases add rules
+      - run: ruff check src tests scripts tasks.py
+
+  test:
+    name: tests (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,io]"
+      - name: Environment check
+        run: fmflow doctor
+      - name: Fast tests
+        run: python tasks.py test
+
+  oldest-dependencies:
+    name: oldest supported versions (py3.10, every lower bound of pyproject.toml)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install uv
+      - name: Install the lowest version allowed for each direct dependency (numpy 1.24, pandas 2.1.2, scipy 1.10, ...)
+        run: uv pip install --system --resolution lowest-direct -e ".[dev]"
+      - run: python tasks.py test
+      - name: Reproduce the pre-registered out-of-sample result
+        run: python tasks.py demo
+
+  setup-scripts:
+    name: one-command setup (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup.sh (installs uv and Python if needed)
+        if: runner.os != 'Windows'
+        run: ./setup.sh --no-kernel
+      - name: setup.ps1 (installs uv and Python if needed)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./setup.ps1 -NoKernel
+      - name: Demo through the created environment
+        shell: bash
+        run: |
+          if [ -x .venv/bin/python ]; then PY=.venv/bin/python; else PY=.venv/Scripts/python.exe; fi
+          $PY tasks.py demo
+
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install uv && uv lock --check
+
+  slow:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev,gen,notebooks]"
+      - name: Slow tests (GARCH re-estimation, synthetic power, DDPM, Diffusion-FHS)
+        run: python tasks.py test-all
+      - name: Execute the use-case notebooks (stops at the first failure)
+        run: python tasks.py notebooks

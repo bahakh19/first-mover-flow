@@ -1,0 +1,48 @@
+\section{Discussion: implications for practitioners}\label{sec:discussion}
+
+\para{What holds up:} Four facts come back in the development sample, the holdout and a later, broader universe:
+\begin{itemize}
+  \item a zero-beta book built on revision flow has a Sharpe ratio near one after costs
+  \item its alpha survives the market and the price factors
+  \item leader minus herd predicts returns with an IC near 0.10
+  \item the book improves almost any institutional strategy it is blended with, because its correlation with them is moderate and it behaves defensively in crises
+\end{itemize}
+
+\para{What does not hold up:} The construction cell is not identified (PBO 0.945, 0.76 over the multiverse). Deflated over the full research history the development Sharpe ratio is not significant, and neither is a family-wise test over all specifications on one short window. The circular time-shift placebo is passed only in the holdout, Section~\ref{sec:identity} relates this to the low power of that placebo, not to a hindsight tilt, and the placebo result is left as reported. In development, P\&L comes from a few names and days. Momentum crashes are the main stress. With ten stocks and a revision-based signal, these weaknesses are expected, the protocol is there to measure them.
+
+\para{For portfolio managers:} FMF is a zero-beta selection sleeve, defensive in market crashes and exposed to momentum crashes. Three implementation choices follow.
+\begin{itemize}
+  \item \emph{Size on path risk:} The posterior-predictive drawdown distribution (5\% quantile $-34\%$ over five years) is a more realistic budget than the in-sample drawdown
+  \item \emph{Decide beta explicitly:} Beta-neutral legs or a disclosed beta budget are one-line options in the package
+  \item \emph{Monitor signal health:} The realised rolling IC is known in real time and gives early warning of decay
+\end{itemize}
+A breakeven cost of 234\,bp per unit traded and turnover of two to three times a year leave plenty of room for execution in liquid large caps.
+
+\para{For QIS structurers:} The strategy is rules-based, uses only end-of-day data, and re-targets one forty-second of the book each day
+\begin{itemize}
+  \item \emph{Index delivery:} It can be delivered as an excess-return index with a volatility target, the package computes index levels, fees and a rulebook from the exact parameters
+  \item \emph{Blending:} As a sleeve in a 50/50 combination it raises the Calmar ratio of every price-factor index studied, in and out of sample
+  \item \emph{Disclosure:} The momentum-crash scenario of Section~\ref{sec:generative} is the stress scenario to disclose
+\end{itemize}
+
+\para{For researchers:} Three lessons apply beyond this strategy.
+\begin{itemize}
+  \item In small universes, report what a sample could detect before what it did detect
+  \item Replace the single backtest with the family of reasonable backtests and a selection-free ensemble
+  \item Combine independent samples formally, with a random-effects meta-analysis and its predictive distribution, instead of counting $p$-values below 0.05
+\end{itemize}
+
+\para{Implementation.:}
+\begin{itemize}
+  \item \emph{Inputs and execution:} Fully rules-based: end-of-day prices and target prices with a one-session knowledge lag, and one forty-second of the book re-targeted each session, which spreads execution
+  \item \emph{Exposure and turnover:} Gross exposure about 0.9, net exposure zero, turnover two to three times a year
+  \item \emph{Capacity:} Set by the liquidity of the names held. No volume data are used, but a breakeven cost of 234\,bp per unit traded leaves a wide margin for market impact in large caps
+  \item \emph{Beta and blending:} Market exposure is a separate decision. With a constant beta budget of 0.2 the Calmar ratio over 2017--2021 rises to 1.66, above RTB's 1.39, with smaller drawdowns and no timing claim. For a QIS structurer the book is a natural low-correlation sleeve, and a 50/50 combination improves the drawdown profile of every price-factor index studied
+\end{itemize}
+
+\para{Limits:} Both universes are small, both cover mostly rising markets, and the out-of-sample window is 2.6 years. The out-of-sample universe (public Kaggle data, Section~\ref{sec:data}) is the ten development names plus twenty current large caps, the period is new, but the list of names was made with knowledge of which companies grew. The causal timing decomposition and the twenty-new-names check address this. An index-membership rule at the start of the window would be a better universe definition. Size, value and sector exposures need data not used here (the package has a sector-neutral option for users with a sector map). Next steps: a broad universe with analyst coverage, where the detectable IC is about 0.032, and a frozen live forward test.
+
+\section{Conclusion}\label{sec:conclusion}
+
+In a concentrated portfolio breadth is low and market exposure can inflate the reported Calmar ratio. I therefore separated the two. The selection signal adds to price momentum, the construction is matched to its information horizon, beta is a disclosed budget, and the tests are sized to the power of the sample. First-Mover Flow uses the timing of analyst revisions to build a zero-beta book. It does better than RTB and than the institutional comparables, improves blends with them, and replicates on a period and on twenty names not used in development. On the nine objections, it comes from timing and not from hindsight, it survives realistic implementation, and its sign does not depend on the specification. Pooled over independent samples, the probability that the mechanism works in the next universe is about 0.96.
+The weak points are momentum crashes and the low precision of any single short sample. The list of failed hypotheses (Table~\ref{tab:ledger}) and the code, which reruns every test on another universe, are published with the paper.

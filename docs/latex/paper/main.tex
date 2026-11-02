@@ -1,0 +1,68 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}
+\usepackage[a4paper,left=2.47cm,right=2.47cm,top=2.5cm,bottom=2.6cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{adjustbox}
+\usepackage{enumitem}
+\usepackage[labelsep=period,font=small,labelfont=bf]{caption}
+\usepackage[authoryear,round]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+\usepackage{xurl}
+\usepackage{microtype}
+\setlength{\emergencystretch}{2.5em}
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\parskip}{0pt}
+\renewcommand{\arraystretch}{1.05}
+\newcommand{\figw}{\textwidth}
+\newcommand{\sym}[1]{\ensuremath{#1}}
+\newcommand{\para}[1]{\par\medskip\noindent\textbf{#1}\quad}
+\hypersetup{pdftitle={Who Revises First? Analyst Revision Flow and Zero-Beta Stock Selection in Concentrated Equity Portfolios},pdfauthor={Khaled Baha}}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{2.2cm}
+{\LARGE\bfseries Who Revises First?\par}
+\vspace{0.5em}
+{\Large Analyst Revision Flow and Zero-Beta Stock Selection\\ in Concentrated Equity Portfolios\par}
+\vspace{1.6em}
+{\large Khaled Baha\footnote{the Code, the data contract, the tests and every number in this paper can be reproduced from the open-source repository that goes with it (\url{https://github.com/bahakh19/first-mover-flow}, Python package \texttt{fmflow}) and from its research notebook. The out-of-sample universe of Section~9 and its pre-registration file ship with the repository. Any errors are mine.}\par}
+\vspace{0.8em}
+{October 2026\par}
+\vspace{2em}
+\begin{minipage}{0.88\textwidth}
+\small
+\noindent\textbf{Abstract.} \input{abstract}
+
+\medskip
+\noindent\textbf{Keywords:} concentrated portfolios, stock selection, analyst target prices, herding, first movers, Calmar ratio, backtest overfitting, multiverse analysis, Bayesian meta-analysis, diffusion models, stress testing.\\
+\textbf{JEL codes:} G11, G12, G14, G17, G23, G24.
+\end{minipage}
+\end{titlepage}
+
+\input{s01_intro}
+\input{s02_lit}
+\input{s03_framework}
+\input{s04_data}
+\input{s05_rtb}
+\input{s06_fmf}
+\input{s07_results}
+\input{s08_toolkit}
+\input{s09_oos}
+\input{s10_objections}
+\input{s11_generative}
+\input{s12_discussion}
+
+\input{references}
+
+\appendix
+\input{appendix}
+\end{document}

@@ -1,0 +1,11 @@
+# Exact versions used to produce every number in docs/paper.pdf (Python 3.13). The package itself only requires the
+# lower bounds in pyproject.toml; CI tests both the lowest allowed versions (numpy 1.24, pandas 2.1.2, ...) and the newest.
+numpy==2.5.3
+pandas==3.0.5
+scipy==1.18.1
+statsmodels==0.15.0
+arch==8.0.0
+scikit-learn==1.9.1
+jax==0.12.0.1
+jaxlib==0.12.0.1
+matplotlib==3.11.2

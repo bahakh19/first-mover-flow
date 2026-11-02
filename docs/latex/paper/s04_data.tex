@@ -1,0 +1,32 @@
+\section{Data}\label{sec:data}
+
+The two universes have the same format: daily closing prices normalised to one at the first observation, and analyst target-price records (publication date, stock, analyst, and the target on the same scale as the price).
+
+\para{Development universe:} Ten US large caps from January 2016 to December 2021 (1,511 sessions after cleaning) with 5 929 accepted target prices from 304 analysts: 3 168 up revisions, 1 020 down revisions, 1 260 reiterations and 481 initiations. The first year is a warm-up. Development (DEV) is 2017-2019 and the holdout is 2020-2021. Table~\ref{tab:universe} gives the cross-section. It is concentrated and very uneven, with total returns from 1.4 to 36.3 times, volatilities from 27\% to 53\% and between 17 and 72 analysts per stock.
+
+\para{Open universe never-seen period:} 30 US stocks from January 2023 to August 2026 (899 sessions) with 2 363 accepted target prices from 50 brokers and 109 event clusters. The development data are proprietary and analyst-level. The open data are public: broker-level target prices from a Kaggle dataset\footnote{\url{https://www.kaggle.com/datasets/yijian2427/us-market-analyst-insights-with-full-stock-symbols} (MIT licence).} and Yahoo Finance closing prices, normalised the same way (see \texttt{DATA\_SOURCES.md} and the \texttt{Data\_Gathering} notebook in the repository). The period begins two years after the end of the development data. The universe is the ten development names plus twenty large caps never used in development Section~\ref{sec:oos} checks that the overlap does not drive the result. Compared with development it has three times more names and much thinner coverage (median 13 analysts per stock, a typical analyst covers 6 of the stocks), total returns between 0.04 and 14.9 times and average pairwise correlation 0.26.
+
+\para{Point-in-time construction:} Prices are cleaned causally. Non-sessions (dates on which fewer than half of the stocks print) are dropped, isolated gaps are forward-filled for five sessions at most and are never back-filled. A target published on day $t_{\text{pub}}$ is known from the next session and expires after 252 sessions. Implausible targets (target/price outside $[0.2,5]$) and revisions that do not fit the price move since the analyst's previous target are removed (Appendix~\ref{app:cleaning}). Each record is an initiation, a reiteration, or a fresh up or down revision. Every feature at session $t$ uses closes up to $t$ and targets with knowledge date $\le t$, and the truncation test checks this.
+
+\begin{table}[t]
+\centering\small
+\caption{Development universe}\label{tab:universe}
+\begin{adjustbox}{max width=\textwidth}\begin{tabular}{lrrrrrrr}
+\toprule
+ & Total & Ann. & & & Fresh & Event & Median \\
+Stock & return ($\times$) & vol (\%) & Analysts & Ratings & revisions & clusters & active (DEV)\\
+\midrule
+stock\_1 & 6.74 & 29.4 & 72 & 775 & 588 & 25 & 30\\
+stock\_2 & 1.43 & 44.1 & 31 & 430 & 325 & 5 & 15\\
+stock\_3 & 4.92 & 52.6 & 17 & 240 & 162 & 17 & 8\\
+stock\_4 & 1.52 & 33.0 & 50 & 639 & 401 & 29 & 25\\
+stock\_5 & 2.49 & 29.2 & 29 & 463 & 355 & 2 & 18\\
+stock\_6 & 6.14 & 26.8 & 58 & 670 & 467 & 24 & 25\\
+stock\_7 & 2.71 & 28.2 & 44 & 620 & 418 & 27 & 24\\
+stock\_8 & 36.35 & 47.1 & 54 & 801 & 616 & 30 & 27\\
+stock\_9 & 3.25 & 36.9 & 54 & 810 & 528 & 30 & 30\\
+stock\_10 & 3.65 & 36.4 & 36 & 481 & 328 & 25 & 17\\
+\bottomrule
+\end{tabular}\end{adjustbox}
+\par\smallskip\begin{minipage}{0.92\textwidth}\footnotesize Fresh revisions are target changes by an analyst whose previous target on the stock is still active. Event clusters are (stock, publication date) pairs with at least five ratings. Median active is the median number of analysts with a valid target (at most 252 sessions old) during 2017--2019.\end{minipage}
+\end{table}

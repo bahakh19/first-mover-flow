@@ -1,0 +1,35 @@
+\section{First-Mover Flow: signal and construction}\label{sec:fmf}
+
+Let $U_{i,s}$ and $D_{i,s}$ be the numbers of fresh up and down revisions on stock $i$ that become known at session $s$.
+
+\para{Revision-flow signals:} Breadth over the last 63 sessions (one earnings cycle) is
+\begin{equation}
+B_{i,t}=\frac{\sum_{s=t-62}^{t}\left(U_{i,s}-D_{i,s}\right)}{\sum_{s=t-62}^{t}\left(U_{i,s}+D_{i,s}\right)},\label{eq:breadth}
+\end{equation}
+defined when there are at least three revisions. Using the sign of a revision rather than its size avoids the heavy tails of revision magnitudes. Event breadth is the same ratio over revisions published on information-event days (five or more ratings on the stock that day). Momentum-orthogonal breadth is the residual from a date-by-date cross-sectional regression of the rank of $B$ on the rank of 6-1 month momentum.
+
+\para{Leader minus herd:} Each fresh revision $r$ on stock $i$ has direction $d_r=\operatorname{sign}\Delta\ln TP$.
+\begin{itemize}
+  \item $r$ is a \emph{leader} if it is published on an event day, or if no other fresh revision on the stock arrived in the previous ten sessions
+  \item $r$ is a \emph{herder} if it is not a leader, arrives 3--15 sessions after the stock's latest event cluster, and points in the cluster's direction
+\end{itemize}
+Over 126 sessions (two earnings cycles, so that the sparse events cover almost every stock-day),
+\begin{equation}
+\mathrm{LMH}_{i,t}=\frac{\sum_{r\in W_t} d_r\mathbf 1^{\text{lead}}_r-\sum_{r\in W_t} d_r\mathbf 1^{\text{herd}}_r}{\#\{\text{leaders}\}+\#\{\text{herders}\}},\label{eq:lmh}
+\end{equation}
+defined when at least three revisions are classified. Every classification uses only revisions known at $t$.
+
+\para{Composite:} The score is the equal-weight average of the four cross-sectional percentile ranks; no weights are estimated \citep{demiguel2009}.
+
+\para{Construction and risk logic:}
+\begin{itemize}
+  \item \emph{Daily target:} Each session a target book goes long the $k$ highest-ranked names and short the $k$ lowest. Each leg holds half of gross capital, in proportion to $1/\hat\sigma_{i,t}$, where $\hat\sigma_{i,t}$ is a walk-forward GJR-GARCH(1,1)-t volatility forecast \citep{glosten1993}
+  \item \emph{Held book:} The book held is the average of the last $f$ targets,
+  \begin{equation}
+  w_{i,t}=\frac1f\sum_{s=t-f+1}^{t} w^{\text{target}}_{i,s}\label{eq:tranche}
+  \end{equation}
+  which is the same as holding $f$ overlapping sub-portfolios and opening one each session \citep{jegadeesh1993}. This removes rebalancing-anchor luck (with a single weekly anchor, the development Sharpe ratio of the same signal ranges from 0.34 to 0.71) and spreads execution over time
+  \item \emph{Exposure:} The book is dollar-neutral every session. If a mandate wants market exposure, it is a separate, constant and disclosed beta budget $c$ (FMF-B20 for $c=0.2$), never a timed overlay
+  \item \emph{Costs:} Net returns are charged 5\,bp per unit of traded notional
+\end{itemize}
+The construction parameters ($k=4$, $f=42$, inverse-volatility weights) are chosen on DEV from a 30-book grid by bootstrap-median Calmar (Section~\ref{sec:construction}).

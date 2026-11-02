@@ -1,0 +1,25 @@
+{
+  "name": "First-Mover Flow",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "postCreateCommand": "pip install --user uv && uv sync --extra plot --extra notebooks --extra dev --extra gen --extra io && uv run python -m ipykernel install --user --name fmflow --display-name 'Python (fmflow)' && uv run fmflow doctor",
+  "containerEnv": {
+    "UV_PROJECT_ENVIRONMENT": "/workspaces/.venv-fmflow",
+    "MPLBACKEND": "Agg"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/workspaces/.venv-fmflow/bin/python",
+        "jupyter.notebookFileRoot": "${fileDirname}"
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "charliermarsh.ruff"
+      ]
+    }
+  },
+  "forwardPorts": [
+    8888
+  ]
+}

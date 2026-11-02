@@ -1,0 +1,30 @@
+\section{Why concentrated universes are hard: a framework}\label{sec:framework}
+
+\subsection{Breadth and detectability}
+
+Let $IC_t$ be the daily cross-sectional Spearman correlation between a signal and forward $h$-session returns over $N$ stocks. Under the null its standard deviation is about $1/\sqrt{N-1}$. With $M$ independent (non-overlapping) observations, the smallest true IC detectable with power $1-\beta$ in a one-sided test at level $\alpha$ is
+\begin{equation}
+\mathrm{MDE}=\frac{t_{1-\alpha,M-1}+t_{1-\beta,M-1}}{\sqrt{N-1}\,\sqrt{M}}.\label{eq:mde}
+\end{equation}
+For $N=10$ and $h=21$, three years ($M\approx 35$) give an MDE of about 0.14, and six years about 0.10. For $N=100$ the same samples give 0.04 and 0.03. Published single-anomaly ICs are usually 0.01--0.05. A good signal in a concentrated universe is therefore close to the detection boundary by construction, and the evidence has to come from several directions.
+
+\subsection{Beta camouflage}
+
+Take a book with long and short legs of budgets $\tfrac12\pm\tau_t$, where $\tau_t$ is a regime-dependent tilt. Its return splits into a dollar-neutral selection part and a timing part with net exposure $2\tau_t$:
+\begin{equation}
+r^{\text{book}}_{t+1}=\underbrace{\tfrac12\left(r^{L}_{t+1}-r^{S}_{t+1}\right)}_{\text{selection}}+\underbrace{\tau_t\left(r^{L}_{t+1}+r^{S}_{t+1}\right)}_{\text{timing}\,\approx\,2\tau_t r^{m}_{t+1}}.\label{eq:camouflage}
+\end{equation}
+An overlay adds value only when the timing part beats a static exposure of the same average size, $2\bar\tau r^m$, and timing regressions detect ability. Otherwise its contribution to Sharpe and Calmar is the equity premium of the sample. Every overlay in the paper is checked this way.
+
+\subsection{The Calmar ratio as an objective}
+
+For drawdown-constrained capital Calmar is the natural objective, but a noisy one. In three years the maximum drawdown is set by one or two episodes, and the stationary-bootstrap 5--95\% interval for the Calmar ratio of a selection book runs from about $-0.1$ to 2.5. Picking specifications by point Calmar mostly picks drawdown paths. Selection here is by the median Calmar over stationary-bootstrap resamples of the development sample \citep{politis1994}, with the probability that the choice is overfit reported next to it. Market exposure is a separate decision (a beta budget) and is never chosen by in-sample Calmar.
+
+\subsection{A validation protocol for small, searched samples}
+\begin{enumerate}
+  \item \emph{Point-in-time construction, with a truncation test:} Each feature computed on data truncated at $T$ must equal the full-sample feature up to $T$. Negative controls (centred windows, full-sample demeaning) must fail
+  \item \emph{Calibrated inference:} For $h$-session labels sampled daily, the Newey--West $t$ with $h$ lags over-rejects (about 9\% at a nominal 5\% on this date grid). I use a phase-averaged non-overlapping test, with simulated size 4--5\%, and Holm's correction inside each family
+  \item \emph{Persistence-preserving placebos:} For a persistent signal IID random scores are a weak null. I also use a stock-label permutation (each stock gets another stock's real signal history) and a circular time-shift of the signal panel, the time-shift keeps each stock's usual rank and so tests timing beyond stock identity
+  \item \emph{Deflation over the research log:} Deflated Sharpe ratios count every configuration ever examined, with the actual correlation structure of the log, and the probability of backtest overfitting is computed at each selection step
+  \item \emph{Pre-registration and replication:} Hypotheses and transfer rules are hashed before outcomes are computed, and the final test is on a period never used for any choice
+\end{enumerate}
